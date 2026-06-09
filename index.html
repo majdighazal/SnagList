@@ -54,15 +54,15 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#eef2f7;color:#172033}
 .priority-critical{background:#7f1d1d!important;color:#fff!important;font-weight:900}
 .status-line{margin:0 20px 18px;color:#475569;font-weight:700}
 .confirm-overlay{position:fixed;inset:0;background:rgba(15,23,42,.58);display:none;align-items:center;justify-content:center;z-index:9999;padding:18px}
-.confirm-dialog{width:min(420px,100%);background:linear-gradient(135deg,#FFF1F2 0%,#FFE4E6 100%);color:#7F1D1D;border-radius:22px;padding:22px;box-shadow:0 22px 70px rgba(127,29,29,.22);border:1px solid #FDA4AF;text-align:center}
-.confirm-dialog i{font-size:42px;margin-bottom:12px;color:#DC2626}
-.confirm-dialog h3{font-size:1.25rem;margin-bottom:8px;font-weight:900;color:#7F1D1D}
-.confirm-dialog p{font-size:.96rem;line-height:1.45;color:#991B1B;font-weight:800;margin-bottom:18px}
+.confirm-dialog{width:min(430px,100%);background:#fff;color:#111827;border-radius:22px;padding:24px;box-shadow:0 24px 80px rgba(15,23,42,.24);border:1px solid #e5e7eb;text-align:center}
+.confirm-dialog i{font-size:42px;margin-bottom:12px;color:#F87171}
+.confirm-dialog h3{font-size:1.25rem;margin-bottom:8px;font-weight:900;color:#111827}
+.confirm-dialog p{font-size:.96rem;line-height:1.45;color:#475569;font-weight:750;margin-bottom:18px}
 .confirm-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .confirm-btn{border:0;border-radius:999px;padding:10px 18px;font-weight:900;cursor:pointer;font-family:inherit;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
-.confirm-btn:hover{transform:translateY(-2px);filter:saturate(1.12) brightness(1.03)}
-.confirm-btn-clear{background:linear-gradient(135deg,#FCA5A5 0%,#EF4444 55%,#DC2626 100%);color:#fff;box-shadow:0 8px 20px rgba(220,38,38,.28)}
-.confirm-btn-cancel{background:#fff;color:#7F1D1D;border:1px solid #FDA4AF;box-shadow:0 8px 18px rgba(127,29,29,.12)}
+.confirm-btn:hover{transform:translateY(-2px);filter:saturate(1.08) brightness(1.02)}
+.confirm-btn-clear{background:#FFE4E6;color:#B91C1C;border:1px solid #FDA4AF;box-shadow:0 8px 20px rgba(244,63,94,.16)}
+.confirm-btn-cancel{background:#f8fafc;color:#334155;border:1px solid #cbd5e1;box-shadow:0 8px 18px rgba(15,23,42,.08)}
 
 @media(max-width:950px){
   body{background:#f3f6fb}
@@ -104,7 +104,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#eef2f7;color:#172033}
       <button class="btn btn-green" id="exportActionBtn"><i class="fa-solid fa-file-code"></i>Export Action Plan HTML</button>
       <button class="btn btn-amber" id="saveAuditJsonBtn"><i class="fa-solid fa-floppy-disk"></i>Save Audit JSON</button>
       <button class="btn btn-slate" id="loadAuditJsonBtn"><i class="fa-solid fa-folder-open"></i>Load Audit JSON</button>
-      <button class="btn btn-red" id="clearBtn"><i class="fa-solid fa-trash"></i>Clear</button>
+      <button class="btn btn-red" id="clearBtn"><i class="fa-solid fa-trash"></i>Clear All</button>
     </div>
   </div>
 
@@ -147,14 +147,14 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#eef2f7;color:#172033}
   </div>
 </div>
 
-<div class="confirm-overlay" id="clearConfirmModal" role="dialog" aria-modal="true" aria-labelledby="clearConfirmTitle">
+<div class="confirm-overlay" id="clearConfirmModal" role="dialog" aria-modal="true" aria-labelledby="clearConfirmTitle" aria-describedby="clearConfirmText">
   <div class="confirm-dialog">
     <i class="fa-solid fa-triangle-exclamation"></i>
-    <h3 id="clearConfirmTitle">Clear All Snagging Items?</h3>
-    <p>This action will remove all imported photos and entered audit information from this screen.</p>
+    <h3 id="clearConfirmTitle">Clear All Information?</h3>
+    <p id="clearConfirmText">This will clear the report information, imported photos, snagging cards, and any loaded audit JSON state from this screen.</p>
     <div class="confirm-actions">
-      <button class="confirm-btn confirm-btn-clear" id="confirmClearBtn">Yes, Clear All</button>
-      <button class="confirm-btn confirm-btn-cancel" id="cancelClearBtn">Cancel</button>
+      <button type="button" class="confirm-btn confirm-btn-clear" id="confirmClearBtn">Confirm Clear All</button>
+      <button type="button" class="confirm-btn confirm-btn-cancel" id="cancelClearBtn">Cancel</button>
     </div>
   </div>
 </div>
@@ -356,25 +356,72 @@ function deleteSnag(index){
 }
 
 const clearConfirmModal = document.getElementById("clearConfirmModal");
+const clearBtn = document.getElementById("clearBtn");
+const confirmClearBtn = document.getElementById("confirmClearBtn");
+const cancelClearBtn = document.getElementById("cancelClearBtn");
 
-document.getElementById("clearBtn").onclick = () => {
+function hasAuditData(){
+  return photos.length > 0 ||
+    document.getElementById("propertyName").value.trim() ||
+    document.getElementById("venueName").value.trim() ||
+    document.getElementById("auditorName").value.trim() ||
+    document.getElementById("responsibleContractor").value.trim() ||
+    document.getElementById("auditDate").value;
+}
+
+function openClearConfirmModal(){
   clearConfirmModal.style.display = "flex";
-};
+  confirmClearBtn.focus();
+}
 
-document.getElementById("cancelClearBtn").onclick = () => {
+function closeClearConfirmModal(){
   clearConfirmModal.style.display = "none";
-};
+  clearBtn.focus();
+}
 
-document.getElementById("confirmClearBtn").onclick = () => {
+function clearAllAuditData(){
   photos = [];
   nextId = 1;
+  ["propertyName", "venueName", "auditorName", "responsibleContractor", "auditDate"].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = "";
+  });
+
+  const loadInput = document.getElementById("loadAuditJsonInput");
+  if(loadInput) loadInput.value = "";
+
   renderCards();
-  clearConfirmModal.style.display = "none";
+  statusLine.textContent = "All audit information cleared.";
+  closeClearConfirmModal();
+
+  setTimeout(() => {
+    if(!photos.length) statusLine.textContent = "0 snagging item(s).";
+  }, 1800);
+}
+
+clearBtn.onclick = () => {
+  if(!hasAuditData()){
+    statusLine.textContent = "Nothing to clear.";
+    setTimeout(() => {
+      if(!photos.length) statusLine.textContent = "0 snagging item(s).";
+    }, 1500);
+    return;
+  }
+  openClearConfirmModal();
 };
+
+cancelClearBtn.onclick = closeClearConfirmModal;
+confirmClearBtn.onclick = clearAllAuditData;
 
 clearConfirmModal.addEventListener("click", e => {
   if(e.target === clearConfirmModal){
-    clearConfirmModal.style.display = "none";
+    closeClearConfirmModal();
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape" && clearConfirmModal.style.display === "flex"){
+    closeClearConfirmModal();
   }
 });
 
