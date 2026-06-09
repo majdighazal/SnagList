@@ -25,10 +25,10 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#eef2f7;color:#172033}
 .btn-red{background:linear-gradient(135deg,#FFF1F2 0%,#FFE4E6 48%,#FECACA 100%);color:#B91C1C!important;border:1px solid #FDA4AF;box-shadow:0 8px 20px rgba(244,63,94,.18)}
 .btn-amber{background:linear-gradient(135deg,#FFD60A 0%,#FF9F0A 50%,#FF7A00 100%);box-shadow:0 8px 20px rgba(255,159,10,.30)}
 .btn-slate{background:linear-gradient(135deg,#8E8E93 0%,#636366 52%,#48484A 100%);box-shadow:0 8px 20px rgba(99,99,102,.26)}
-.panel{background:#fff;margin:18px 20px;border-radius:24px;padding:20px;box-shadow:0 6px 18px rgba(15,23,42,.07)}
-.meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.panel{background:#fff;margin:18px 20px;border-radius:24px;padding:20px;box-shadow:0 6px 18px rgba(15,23,42,.07);overflow:hidden}
+.meta-grid{display:grid;grid-template-columns:minmax(230px,1.15fr) minmax(170px,.9fr) minmax(170px,.9fr) minmax(250px,1.1fr) minmax(160px,.8fr);gap:16px;align-items:end}
 .field{display:flex;flex-direction:column;gap:7px}
-.field label{font-weight:800;color:#1f2937}
+.field label{font-weight:800;color:#1f2937;line-height:1.15;white-space:nowrap}
 .field input,.field textarea,.field select{border:1px solid #cbd5e1;border-radius:14px;padding:12px 13px;font-size:15px;font-family:inherit;background:#fff}
 .field textarea{min-height:120px;resize:vertical}
 .hint{color:#64748b;font-size:.92rem;margin-top:10px;line-height:1.45}
@@ -36,7 +36,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#eef2f7;color:#172033}
 .empty{background:#fff;border-radius:26px;padding:75px 20px;text-align:center;color:#64748b;box-shadow:0 6px 18px rgba(15,23,42,.07)}
 .empty i{font-size:72px;margin-bottom:16px;color:#94a3b8}
 .snag-card{background:#fff;border-radius:28px;padding:20px;box-shadow:0 6px 18px rgba(15,23,42,.07);display:grid;grid-template-columns:minmax(280px,400px) minmax(0,1fr);gap:22px;border:1px solid #e2e8f0;align-items:start}
-.photo-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:22px;overflow:hidden;height:310px;display:flex;align-items:center;justify-content:center}
+.photo-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:22px;overflow:hidden;height:310px;display:flex;align-items:center;justify-content:center;position:relative}
 .photo-box img{width:100%;height:100%;object-fit:contain;background:#fff}
 .card-body{display:flex;flex-direction:column;gap:14px}
 .card-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
@@ -70,6 +70,8 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#eef2f7;color:#172033}
   .header{position:relative;align-items:flex-start;padding:14px}
   .logo h1{font-size:1.15rem}
   .panel{margin:12px;border-radius:18px;padding:14px}
+  .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .field label{white-space:normal}
   .cards{padding:0 12px 28px;gap:14px}
   .snag-card{grid-template-columns:1fr;padding:14px;border-radius:20px;gap:14px}
   .photo-box{height:240px;border-radius:16px}
@@ -482,16 +484,17 @@ function buildActionPlanHTML(payload){
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Snagging Action Plan</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Segoe UI",Arial,sans-serif;background:#eef2f7;color:#182235;padding:18px}
-.report{max-width:1180px;margin:auto}
+body{font-family:"Segoe UI",Arial,sans-serif;background:#eef2f7;color:#182235;padding:18px;overflow-x:hidden}
+.report{max-width:1280px;margin:auto;width:100%}
 .no-pdf{display:block}.pdf-only{display:none}
 .topbar{background:#101828;color:#fff;border-radius:18px;padding:18px 22px;margin-bottom:16px;display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;box-shadow:0 8px 22px rgba(15,23,42,.18)}
 .topbar h1{font-size:1.45rem;font-weight:900}.topbar small{color:#cbd5e1;font-weight:700}
-.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px}.btn{border:0;border-radius:999px;padding:10px 16px;color:#fff;font-weight:900;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;box-shadow:0 8px 20px rgba(0,122,255,.28);letter-spacing:.15px}.btn:hover{transform:translateY(-2px);filter:saturate(1.14) brightness(1.04);box-shadow:0 12px 28px rgba(0,122,255,.34)}.btn:active{transform:translateY(0);filter:brightness(.96)}.btn-blue{background:linear-gradient(135deg,#0A84FF 0%,#007AFF 48%,#0057D8 100%)}.btn-green{background:linear-gradient(135deg,#32D74B 0%,#30B84A 45%,#159A37 100%);box-shadow:0 8px 20px rgba(48,184,74,.28)}.btn-slate{background:linear-gradient(135deg,#8E8E93 0%,#636366 52%,#48484A 100%);box-shadow:0 8px 20px rgba(99,99,102,.26)}
-.meta{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}.meta-box{background:#fff;border:1px solid #dbe4ef;border-radius:14px;padding:11px 13px}.meta-box span{display:block;color:#64748b;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}.meta-box b{font-size:14px;color:#111827}.stamp{background:#eef6ff;color:#0f4c81;border:1px solid #bfdbfe;border-radius:12px;padding:9px 12px;font-weight:900;font-size:12px;text-align:center}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px}.btn{border:0;border-radius:999px;padding:10px 16px;color:#fff;font-weight:900;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;box-shadow:0 8px 20px rgba(0,122,255,.28);letter-spacing:.15px}.btn:hover{transform:translateY(-2px);filter:saturate(1.14) brightness(1.04);box-shadow:0 12px 28px rgba(0,122,255,.34)}.btn:active{transform:translateY(0);filter:brightness(.96)}.btn-blue{background:linear-gradient(135deg,#0A84FF 0%,#007AFF 48%,#0057D8 100%)}.btn-green{background:linear-gradient(135deg,#32D74B 0%,#30B84A 45%,#159A37 100%);box-shadow:0 8px 20px rgba(48,184,74,.28)}.btn-slate{background:linear-gradient(135deg,#8E8E93 0%,#636366 52%,#48484A 100%);box-shadow:0 8px 20px rgba(99,99,102,.26)}.btn-red{background:linear-gradient(135deg,#FF6961 0%,#FF3B30 55%,#D70015 100%);box-shadow:0 8px 20px rgba(255,59,48,.25)}.rect-photo-wrap{position:relative}.rect-delete-btn{position:absolute;top:8px;right:8px;z-index:5;border:0;border-radius:999px;padding:6px 10px;background:linear-gradient(135deg,#FF6961 0%,#FF3B30 55%,#D70015 100%);color:#fff;font-size:12px;font-weight:900;cursor:pointer;box-shadow:0 6px 16px rgba(255,59,48,.28);line-height:1.05}.rect-delete-btn:hover{filter:brightness(1.04);transform:translateY(-1px)}.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.62);display:none;align-items:center;justify-content:center;z-index:99999;padding:18px}.modal-overlay.show{display:flex}.modal-box{width:min(430px,100%);background:#fff;border-radius:22px;padding:22px;box-shadow:0 24px 80px rgba(15,23,42,.25);border:1px solid #dbe4ef;text-align:center}.modal-box i{font-size:40px;margin-bottom:12px}.modal-box h3{font-size:1.2rem;font-weight:950;color:#111827;margin-bottom:8px}.modal-box p{font-size:.96rem;line-height:1.45;color:#475569;font-weight:750;margin-bottom:16px}.modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.modal-action-btn{border:0;border-radius:999px;padding:10px 18px;font-family:inherit;font-weight:950;cursor:pointer}.modal-delete{background:linear-gradient(135deg,#FF6961 0%,#FF3B30 55%,#D70015 100%);color:#fff}.modal-cancel{background:#f8fafc;color:#334155;border:1px solid #cbd5e1}.pdf-progress-bar{height:12px;border-radius:999px;background:#e2e8f0;overflow:hidden;margin-top:8px;border:1px solid #cbd5e1}.pdf-progress-bar span{display:block;height:100%;width:0%;background:#15803d;transition:width .2s ease}.pdf-progress-percent{font-weight:950;color:#0f4c81;margin-top:8px}.pdf-progress-icon{color:#0A84FF}.delete-warning-icon{color:#DC2626}@media print{.modal-overlay{display:none!important}}
+.meta{display:grid;grid-template-columns:minmax(260px,1.25fr) minmax(150px,.8fr) minmax(150px,.8fr) minmax(240px,1.1fr) minmax(145px,.75fr);gap:10px;margin-top:14px;align-items:stretch}.meta-box{background:#fff;border:1px solid #dbe4ef;border-radius:14px;padding:11px 13px;min-width:0}.meta-box span{display:block;color:#64748b;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.25px;margin-bottom:4px;line-height:1.15;white-space:nowrap}.meta-box b{display:block;font-size:14px;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.stamp{background:#eef6ff;color:#0f4c81;border:1px solid #bfdbfe;border-radius:12px;padding:9px 12px;font-weight:900;font-size:12px;text-align:center}
 .progress-card{background:#fff;border:1px solid #dbe4ef;border-radius:16px;padding:14px 16px;margin-bottom:16px}.progress-track{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-top:8px}.progress-fill{height:100%;width:0%;background:#15803d}
 .item{background:#fff;border:1px solid #dbe4ef;border-radius:18px;padding:16px;margin-bottom:16px;box-shadow:0 5px 14px rgba(15,23,42,.06)}.item-title{font-weight:950;color:#0f4c81;background:#e8f2ff;border-radius:999px;padding:7px 14px;display:inline-block;margin-bottom:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.frame{border:1px solid #dbe4ef;border-radius:16px;padding:14px;background:#f8fafc}.frame.audit{border-left:6px solid #2563eb}.frame.action{border-left:6px solid #15803d}.frame h3{font-size:16px;margin-bottom:12px;color:#111827}
 .img-frame{width:100%;height:260px;background:#e2e8f0;border:1px solid #cbd5e1;border-radius:13px;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#64748b;font-weight:900;text-align:center}.img-frame img{width:100%;height:100%;object-fit:contain;background:#fff}.field{margin-top:10px}.field label{display:block;font-weight:900;margin-bottom:5px;color:#1f2937;font-size:13px}.field input,.field textarea,.field select{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:9px 10px;font-family:inherit;font-size:14px;background:#fff}.field textarea{min-height:90px;resize:vertical}.readonly{background:#eef2f7!important;color:#334155}.status-open{background:#fee2e2!important;color:#991b1b!important;font-weight:900}.status-progress{background:#fef3c7!important;color:#92400e!important;font-weight:900}.status-completed{background:#dcfce7!important;color:#166534!important;font-weight:900}
@@ -550,10 +553,23 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#eef2f7;color:#182235;pa
 .pdf-detail-value{padding:1.1mm 1.5mm;font-size:6.8pt;line-height:1.18;color:#000;font-weight:800;overflow:hidden;word-break:break-word}
 .pdf-footer{position:absolute;left:7mm;right:7mm;bottom:3mm;border-top:1px solid #cbd5e1;padding-top:1mm;display:flex;justify-content:space-between;color:#64748b;font-size:6.6pt;font-weight:900;text-transform:uppercase;letter-spacing:.4px}
 @media(max-width:900px){
-  .grid,.meta{grid-template-columns:1fr}.stamp{width:max-content}
+  body{padding:12px}
+  .report{max-width:none}
+  .topbar{border-radius:14px;padding:14px}
+  .toolbar{display:grid;grid-template-columns:1fr;gap:8px}.toolbar .btn{width:100%;justify-content:center}
+  .grid{grid-template-columns:1fr}.meta{grid-template-columns:repeat(2,minmax(0,1fr))}.meta-box span,.meta-box b{white-space:normal}.stamp{width:max-content}
   .pdf-meta,.pdf-summary{grid-template-columns:1fr}
   .pdf-sheet{width:auto;height:auto;min-height:auto;padding:14px;overflow:visible;break-after:auto;page-break-after:auto}
   .pdf-header{height:auto}.pdf-items-page{height:auto;overflow:visible}.pdf-item-card{height:auto}.pdf-item-body{height:auto;grid-template-columns:1fr;overflow:visible}.pdf-item-top{height:auto;grid-template-columns:1fr}.pdf-photo-stack{align-items:center}.pdf-details{height:auto}.pdf-detail-row{grid-template-columns:1fr}.pdf-footer{position:static;margin-top:12px}
+}
+@media(max-width:560px){
+  body{padding:10px}
+  .topbar h1{font-size:1.12rem}
+  .topbar small{font-size:.82rem}
+  .meta{grid-template-columns:1fr}
+  .item{padding:12px;border-radius:14px}
+  .frame{padding:12px;border-radius:12px}
+  .img-frame{height:220px}
 }
 </style>
 </head>
@@ -564,7 +580,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#eef2f7;color:#182235;pa
     <div class="stamp">Generated<br>${esc(payload.generatedAt)}</div>
   </div>
   <div class="toolbar no-pdf">
-    <button class="btn btn-green" onclick="exportPdf()"><i class="fa-solid fa-file-pdf"></i>Export Corporate PDF</button>
+    <button class="btn btn-green" onclick="exportPdf()"><i class="fa-solid fa-file-pdf"></i>Generate Report PDF</button>
     <button class="btn btn-blue" onclick="saveActionJson()"><i class="fa-solid fa-floppy-disk"></i>Save Action JSON</button>
     <button class="btn btn-slate" onclick="document.getElementById('loadActionJsonInput').click()"><i class="fa-solid fa-folder-open"></i>Load Action JSON</button>
   </div>
@@ -580,6 +596,28 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#eef2f7;color:#182235;pa
   <div id="items"></div>
 </div>
 <div id="pdfHost" style="display:none"></div>
+
+<div class="modal-overlay" id="pdfProgressModal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <i class="fa-solid fa-spinner fa-spin pdf-progress-icon"></i>
+    <h3 id="pdfProgressTitle">Generate Action Plan Report - PDF</h3>
+    <p id="pdfProgressMessage">Building the filled report...</p>
+    <div class="pdf-progress-bar"><span id="pdfProgressFill"></span></div>
+    <div class="pdf-progress-percent" id="pdfProgressPercent">0%</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deletePhotoModal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <i class="fa-solid fa-triangle-exclamation delete-warning-icon"></i>
+    <h3>Delete Photo?</h3>
+    <p id="deletePhotoMessage">This rectification photo will be removed from the action plan.</p>
+    <div class="modal-actions">
+      <button class="modal-action-btn modal-delete" id="confirmDeletePhotoBtn">Delete Photo</button>
+      <button class="modal-action-btn modal-cancel" id="cancelDeletePhotoBtn">Cancel</button>
+    </div>
+  </div>
+</div>
 <script>
 let payload = ${json};
 function esc(s){return String(s ?? '').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m];});}
@@ -589,8 +627,15 @@ function statusClass(s){if(s==='Completed')return 'status-completed';if(s==='In 
 function pdfStatusClass(s){if(s==='Completed')return 'pdf-completed';if(s==='In Progress')return 'pdf-progress';return 'pdf-open';}
 async function compressImage(dataUrl,maxWidth=1000,quality=.62){return new Promise(resolve=>{const img=new Image();img.onload=()=>{let w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;if(w>maxWidth){h=Math.round(h*maxWidth/w);w=maxWidth;}const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);resolve(canvas.toDataURL('image/jpeg',quality));};img.onerror=()=>resolve(dataUrl);img.src=dataUrl;});}
 function setHeader(){document.getElementById('hProperty').textContent=payload.propertyName||'';document.getElementById('hVenue').textContent=payload.venueName||'';document.getElementById('hAuditor').textContent=payload.auditorName||'';document.getElementById('hResponsibleContractor').textContent=payload.responsibleContractor||payload.responsiblePerson||'';document.getElementById('hAuditDate').textContent=formatDateDisplay(payload.auditDate);}
-function render(){setHeader();const root=document.getElementById('items');root.innerHTML='';payload.items.forEach(function(item,index){const div=document.createElement('div');div.className='item';div.innerHTML='<div class="item-title">SNAG #'+(index+1)+'</div><div class="grid"><div class="frame audit"><h3><i class="fa-solid fa-user-check"></i> Auditor Finding</h3><div class="img-frame"><img src="'+item.auditorPhoto+'" alt="Auditor photo"></div><div class="field"><label>Location</label><input class="readonly" readonly value="'+esc(item.location)+'"></div><div class="field"><label>Auditor Comment</label><textarea class="readonly" readonly>'+esc(item.auditorComment)+'</textarea></div><div class="field"><label>Priority</label><input class="readonly" readonly value="'+esc(item.priority)+'"></div><div class="field"><label>Snag Date</label><input class="readonly" readonly value="'+formatDateDisplay(item.snagDate)+'"></div></div><div class="frame action"><h3><i class="fa-solid fa-helmet-safety"></i> Corrective Action Plan</h3><div class="img-frame" id="previewBox'+index+'">'+(item.rectificationPhoto?'<img src="'+item.rectificationPhoto+'" alt="Rectification photo">':'Rectification Photo Preview')+'</div><div class="field no-pdf"><label>Upload Rectification Photo</label><input type="file" accept="image/*" onchange="uploadRectPhoto(event,'+index+')"></div><div class="field"><label>Corrective Action Comment</label><textarea oninput="payload.items['+index+'].correctiveComment=this.value">'+esc(item.correctiveComment)+'</textarea></div><div class="field"><label>Status</label><select class="'+statusClass(item.status)+'" onchange="updateStatus(this,'+index+')"><option '+(item.status==='Open'?'selected':'')+'>Open</option><option '+(item.status==='In Progress'?'selected':'')+'>In Progress</option><option '+(item.status==='Completed'?'selected':'')+'>Completed</option></select></div><div class="field"><label>Fixing Date</label><input type="date" value="'+esc(item.fixingDate||'')+'" oninput="payload.items['+index+'].fixingDate=this.value"></div></div></div>';root.appendChild(div);});updateProgress();}
-async function uploadRectPhoto(event,index){const file=event.target.files&&event.target.files[0];if(!file)return;const dataURL=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=ev=>resolve(ev.target.result);reader.onerror=reject;reader.readAsDataURL(file);});payload.items[index].rectificationPhoto=await compressImage(dataURL,900,.58);document.getElementById('previewBox'+index).innerHTML='<img src="'+payload.items[index].rectificationPhoto+'" alt="Rectification photo">';}
+function render(){setHeader();const root=document.getElementById('items');root.innerHTML='';payload.items.forEach(function(item,index){const div=document.createElement('div');div.className='item';const rectPreview='<div class="rect-photo-wrap"><div class="img-frame" id="previewBox'+index+'">'+(item.rectificationPhoto?'<img src="'+item.rectificationPhoto+'" alt="Rectification photo">':'Rectification Photo Preview')+'</div>'+(item.rectificationPhoto?'<button type="button" class="rect-delete-btn no-pdf" onclick="requestDeleteRectPhoto('+index+')"><i class="fa-solid fa-trash"></i> Delete Photo</button>':'')+'</div>';div.innerHTML='<div class="item-title">SNAG #'+(index+1)+'</div><div class="grid"><div class="frame audit"><h3><i class="fa-solid fa-user-check"></i> Auditor Finding</h3><div class="img-frame"><img src="'+item.auditorPhoto+'" alt="Auditor photo"></div><div class="field"><label>Location</label><input class="readonly" readonly value="'+esc(item.location)+'"></div><div class="field"><label>Auditor Comment</label><textarea class="readonly" readonly>'+esc(item.auditorComment)+'</textarea></div><div class="field"><label>Priority</label><input class="readonly" readonly value="'+esc(item.priority)+'"></div><div class="field"><label>Snag Date</label><input class="readonly" readonly value="'+formatDateDisplay(item.snagDate)+'"></div></div><div class="frame action"><h3><i class="fa-solid fa-helmet-safety"></i> Corrective Action Plan</h3>'+rectPreview+'<div class="field no-pdf"><label>Upload Rectification Photo</label><input type="file" accept="image/*" onchange="uploadRectPhoto(event,'+index+')"></div><div class="field"><label>Corrective Action Comment</label><textarea oninput="payload.items['+index+'].correctiveComment=this.value">'+esc(item.correctiveComment)+'</textarea></div><div class="field"><label>Status</label><select class="'+statusClass(item.status)+'" onchange="updateStatus(this,'+index+')"><option '+(item.status==='Open'?'selected':'')+'>Open</option><option '+(item.status==='In Progress'?'selected':'')+'>In Progress</option><option '+(item.status==='Completed'?'selected':'')+'>Completed</option></select></div><div class="field"><label>Fixing Date</label><input type="date" value="'+esc(item.fixingDate||'')+'" oninput="payload.items['+index+'].fixingDate=this.value"></div></div></div>';root.appendChild(div);});updateProgress();}
+async function uploadRectPhoto(event,index){const file=event.target.files&&event.target.files[0];if(!file)return;const dataURL=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=ev=>resolve(ev.target.result);reader.onerror=reject;reader.readAsDataURL(file);});payload.items[index].rectificationPhoto=await compressImage(dataURL,900,.58);render();}
+let pendingDeletePhotoIndex=null;
+function requestDeleteRectPhoto(index){const item=payload.items[index];if(!item||!item.rectificationPhoto)return;pendingDeletePhotoIndex=index;document.getElementById('deletePhotoMessage').textContent='Delete the rectification photo for SNAG #'+(index+1)+'?';document.getElementById('deletePhotoModal').classList.add('show');}
+function closeDeletePhotoModal(){pendingDeletePhotoIndex=null;document.getElementById('deletePhotoModal').classList.remove('show');}
+function confirmDeleteRectPhoto(){if(pendingDeletePhotoIndex===null)return;const item=payload.items[pendingDeletePhotoIndex];if(item)item.rectificationPhoto='';closeDeletePhotoModal();render();}
+document.getElementById('confirmDeletePhotoBtn').addEventListener('click',confirmDeleteRectPhoto);
+document.getElementById('cancelDeletePhotoBtn').addEventListener('click',closeDeletePhotoModal);
+document.getElementById('deletePhotoModal').addEventListener('click',function(e){if(e.target===this)closeDeletePhotoModal();});
 function updateStatus(select,index){payload.items[index].status=select.value;if(select.value==='Completed'&&!payload.items[index].fixingDate){payload.items[index].fixingDate=todayISO();}select.className=statusClass(select.value);render();}
 function updateProgress(){const total=payload.items.length;const completed=payload.items.filter(x=>x.status==='Completed').length;const percent=total?Math.round((completed/total)*100):0;document.getElementById('progressText').textContent=completed+' / '+total+' Completed · '+percent+'%';document.getElementById('progressFill').style.width=percent+'%';}
 function downloadText(filename,text,type='application/json'){const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);}
@@ -702,7 +747,17 @@ function buildPdfReport(){
   }
   return pages;
 }
-function exportPdf(){const host=document.getElementById('pdfHost');host.innerHTML=buildPdfReport();host.style.display='block';const safe=(payload.propertyName||'Snagging_Action_Plan').replace(/[^\\w\\-]+/g,'_');html2pdf().set({margin:[0,0,0,0],filename:safe+'_Corporate_Snagging_Report.pdf',image:{type:'jpeg',quality:.82},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false,letterRendering:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait',compress:true},pagebreak:{mode:['css']}}).from(host).save().then(()=>{host.style.display='none';host.innerHTML='';});}
+function syncPayloadFromForm(){Array.from(document.querySelectorAll('#items > .item')).forEach(function(card,index){const item=payload.items[index];if(!item)return;const correctiveTextarea=card.querySelector('.frame.action textarea');const status=card.querySelector('.frame.action select');const fixingDate=card.querySelector('.frame.action input[type="date"]');if(correctiveTextarea)item.correctiveComment=correctiveTextarea.value;if(status)item.status=status.value;if(fixingDate)item.fixingDate=fixingDate.value;});}
+function setPdfButtonBusy(isBusy,text){const btn=document.querySelector('.toolbar .btn-green');if(!btn)return;if(isBusy){btn.dataset.originalHtml=btn.dataset.originalHtml||btn.innerHTML;btn.disabled=true;btn.style.opacity='.72';btn.style.cursor='wait';btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> '+(text||'Preparing PDF...');}else{btn.disabled=false;btn.style.opacity='';btn.style.cursor='';if(btn.dataset.originalHtml)btn.innerHTML=btn.dataset.originalHtml;}}
+function showPdfProgress(title,message,percent){const modal=document.getElementById('pdfProgressModal');document.getElementById('pdfProgressTitle').textContent=title||'Generate Action Plan Report - PDF';document.getElementById('pdfProgressMessage').textContent=message||'Building the filled report...';updatePdfProgress(percent||0,message);modal.classList.add('show');}
+function updatePdfProgress(percent,message){const pct=Math.max(0,Math.min(100,Math.round(percent||0)));const fill=document.getElementById('pdfProgressFill');const pctText=document.getElementById('pdfProgressPercent');if(message)document.getElementById('pdfProgressMessage').textContent=message;if(fill)fill.style.width=pct+'%';if(pctText)pctText.textContent=pct+'%';}
+function hidePdfProgress(){document.getElementById('pdfProgressModal').classList.remove('show');}
+function preparePdfHost(host){host.style.display='block';host.style.position='fixed';host.style.left='0';host.style.top='0';host.style.width='210mm';host.style.minHeight='297mm';host.style.background='#fff';host.style.zIndex='1000';host.style.opacity='1';host.style.visibility='visible';host.style.pointerEvents='none';host.style.transform='none';}
+function cleanupPdfHost(host){if(!host)return;host.style.display='none';host.style.position='';host.style.left='';host.style.top='';host.style.width='';host.style.minHeight='';host.style.background='';host.style.zIndex='';host.style.opacity='';host.style.visibility='';host.style.pointerEvents='';host.style.transform='';host.innerHTML='';}
+function waitForPdfFrame(){return new Promise(function(resolve){requestAnimationFrame(function(){requestAnimationFrame(resolve);});});}
+function waitForPdfImages(root){const imgs=Array.from(root.querySelectorAll('img'));return Promise.all(imgs.map(function(img){if(img.complete&&img.naturalWidth){return img.decode?img.decode().catch(function(){}):Promise.resolve();}return new Promise(function(resolve){img.onload=function(){resolve();};img.onerror=function(){resolve();};}).then(function(){return img.decode?img.decode().catch(function(){}):undefined;});}));}
+function printPdfFallback(host){const existing=document.getElementById('pdfPrintFallbackStyle');if(existing)existing.remove();const style=document.createElement('style');style.id='pdfPrintFallbackStyle';style.textContent='@media print{body{background:#fff!important;padding:0!important}.report,.toolbar,.modal-overlay{display:none!important}#pdfHost{display:block!important;position:static!important;width:210mm!important;margin:0!important}.pdf-sheet{width:210mm!important;height:296.5mm!important;break-after:page!important;page-break-after:always!important;box-shadow:none!important}.pdf-sheet:last-child{break-after:auto!important;page-break-after:auto!important}}';document.head.appendChild(style);preparePdfHost(host);host.style.position='static';host.style.pointerEvents='auto';updatePdfProgress(100,'Opening browser print as backup...');const done=function(){style.remove();cleanupPdfHost(host);setPdfButtonBusy(false);hidePdfProgress();window.removeEventListener('afterprint',done);};window.addEventListener('afterprint',done,{once:true});setTimeout(function(){window.print();},250);}
+async function exportPdf(){const host=document.getElementById('pdfHost');const safe=(payload.propertyName||'Snagging_Action_Plan').replace(/[^\\w-]+/g,'_');let usingPrintFallback=false;setPdfButtonBusy(true,'Preparing PDF...');showPdfProgress('Generate Action Plan Report - PDF','Building the filled report...',8);try{syncPayloadFromForm();host.innerHTML=buildPdfReport();preparePdfHost(host);updatePdfProgress(18,'Loading report pages and photos...');await waitForPdfFrame();if(document.fonts&&document.fonts.ready){await document.fonts.ready.catch(function(){});}await waitForPdfImages(host);await waitForPdfFrame();const sheets=Array.from(host.querySelectorAll('.pdf-sheet'));if(!sheets.length)throw new Error('No PDF pages were created.');if(!(window.html2canvas&&window.jspdf&&window.jspdf.jsPDF)){usingPrintFallback=true;printPdfFallback(host);return;}const pdf=new window.jspdf.jsPDF({unit:'mm',format:'a4',orientation:'portrait',compress:true});for(let i=0;i<sheets.length;i++){const pageProgress=25+Math.round(((i+1)/sheets.length)*65);setPdfButtonBusy(true,'Rendering page '+(i+1)+' / '+sheets.length+'...');updatePdfProgress(pageProgress,'Rendering page '+(i+1)+' of '+sheets.length+'...');const canvas=await window.html2canvas(sheets[i],{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,letterRendering:true,windowWidth:1280,windowHeight:1600,scrollX:0,scrollY:0,removeContainer:false});if(!canvas.width||!canvas.height)throw new Error('PDF page canvas was empty.');const image=canvas.toDataURL('image/jpeg',.9);if(i>0)pdf.addPage('a4','portrait');pdf.addImage(image,'JPEG',0,0,210,297,undefined,'FAST');}updatePdfProgress(96,'Saving PDF file...');pdf.save(safe+'_Corporate_Snagging_Report.pdf');updatePdfProgress(100,'Done.');}catch(err){console.error(err);usingPrintFallback=true;printPdfFallback(host);return;}finally{if(!usingPrintFallback){setPdfButtonBusy(false);cleanupPdfHost(host);setTimeout(hidePdfProgress,350);}}}
 render();
 <\/script>
 </body>
